@@ -12,7 +12,7 @@ def getPosition(x,y):
         regex = r"\b"+re.escape(i)+r"\b"
         for match in re.finditer(regex,x):
             s=match.start()
-            e=match.end()
+            e=match.end() -1
             start_end=[s,e]
             pos_array.append(start_end)
         dict[i] = pos_array 
@@ -25,12 +25,11 @@ orig_file = open("practice.txt","r")
 
 count = 1 #initialize count of every 200 line document 
 docu_length = 0 #initialize length of 200 line document 
-
-
 file_number = 1
 fileName = "file"+str(file_number)
 toWrite = open(fileName,'w')
-
+firstLine = "Row#\tStart\tEnd\tType\tName\n"
+toWrite.write(firstLine)
 
 for line in orig_file:
     if not line.startswith("Sentence"):
@@ -40,31 +39,35 @@ for line in orig_file:
         mrna=data[2]
         mir=mrna.split("|")
         if(count < 5):      #loop through every 200 lines at a time 
+            this_length = len(line)
             result = getPosition(sentence,mir)
             for key in result:
                 array_position = result[key]
                 for pos in array_position:
-                    newLine = row,pos[0],pos[1],key
+                    start = docu_length + pos[0]
+                    end = docu_length + pos[1]
+                    newLine = row,start,end,"miRNA",key
                     toWrite.write('\t'.join(map(str,newLine))+'\n')
-
-            this_length = len(line)
-            docu_length = docu_length + this_length #Update docu_length 
+            docu_length = docu_length + this_length     #update docu_length
             count +=1
         else:
             toWrite.close()
             docu_length = 0 #Reset at zero for next 200 lines to begin
             this_length = len(line)
-            docu_length = docu_length + this_length #update docu_length
             count =1
             file_number += 1
             fileName = "file"+str(file_number)
             toWrite = open(fileName,'w')
+            toWrite.write(firstLine)
             result = getPosition(sentence,mir)
             for key in result:
                 array_position = result[key]
                 for pos in array_position:
-                    newLine = row,pos[0],pos[1],key
+                    start = docu_length + pos[0]
+                    end = docu_length + pos[1]
+                    newLine = row,start,end,"miRNA",key
                     toWrite.write('\t'.join(map(str,newLine))+'\n')
+            docu_length = docu_length + this_length
             count +=1
 
 
