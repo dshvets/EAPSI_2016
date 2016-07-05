@@ -40,10 +40,15 @@ for line in orig_file:
         mrna=data[2]
         mir=mrna.split("|")
         if(count < 5):      #loop through every 200 lines at a time 
-            toWrite.write(row)
+            result = getPosition(sentence,mir)
+            for key in result:
+                array_position = result[key]
+                for pos in array_position:
+                    newLine = row,pos[0],pos[1],key
+                    toWrite.write('\t'.join(map(str,newLine))+'\n')
+
             this_length = len(line)
             docu_length = docu_length + this_length #Update docu_length 
-            #result = getPosition(sentence,mir)
             count +=1
         else:
             toWrite.close()
@@ -54,7 +59,12 @@ for line in orig_file:
             file_number += 1
             fileName = "file"+str(file_number)
             toWrite = open(fileName,'w')
-            toWrite.write(row)
+            result = getPosition(sentence,mir)
+            for key in result:
+                array_position = result[key]
+                for pos in array_position:
+                    newLine = row,pos[0],pos[1],key
+                    toWrite.write('\t'.join(map(str,newLine))+'\n')
             count +=1
 
 
