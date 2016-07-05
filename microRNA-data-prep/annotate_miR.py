@@ -6,17 +6,19 @@ import re
 #Reg-ex function to search for miRNA in the sentence and obtain the start and end position
 #Input x is the sentence, y is an array including the miRNA of interest
 def getPosition(x,y):
+    y=list(set(y)) #Get only unique miRNA from list
     dict = {}   #dictionary to store miRNA name and positions within sentence 
     for i in y:
+        pos_array=[]
+        #regex = "\b"+i+"\b"
         for match in re.finditer(i,x):
             s=match.start()
             e=match.end()
-            start_end=[[s,e]]
-            if i not in dict:
-                dict[i]=start_end
+            start_end=[s,e]
+            pos_array.append(start_end)
+        dict[i] = pos_array 
     return dict 
         
-
 
 #Open original file for reading 
 #If file is .XLSX, convert it to .Txt (tab-separated file)
@@ -42,10 +44,6 @@ for line in orig_file:
             #print mir
             #print count 
             count +=1
-            #data = line.split("\t")
-            #sentence = data[1]
-            #mir = data[2]
-            #print mir
 
 
 
