@@ -54,9 +54,11 @@ for line in orig_file:
         trig=data[3]
         trigger=trig.split("|")
         disease = data[4]
+        disease = disease.rstrip('\n')
         if(count < 5):      #loop through every 200 lines at a time
             this_length = len(sentence)
-            result = getPosition(sentence,mir)
+
+            result = getPosition(sentence,mir)  #Call function on miRNA and write to file
             for key in result:
                 array_position = result[key]
                 for pos in array_position:
@@ -65,8 +67,7 @@ for line in orig_file:
                     newLine = row,start,end,"miRNA",key
                     toWrite.write('\t'.join(map(str,newLine))+'\n')
 
-            trig_result = getPosition(sentence,trigger)
-
+            trig_result = getPosition(sentence,trigger)  #Call function on trigger word and write to file
             for trig_key in trig_result:
                 trig_value = trig_result[trig_key]
                 for trig_pos in trig_value:
@@ -74,6 +75,15 @@ for line in orig_file:
                     end = docu_length + trig_pos[1]
                     newLine = row,start,end,"Trigger Word",trig_key
                     toWrite.write('\t'.join(map(str,newLine))+'\n')
+
+            dis_result = getDisease(sentence,disease)   #Call function on disease and write to file
+            for y in dis_result:
+                print y
+                start = docu_length + y[0]
+                end = docu_length + y[1]
+                newLine = row,start,end,"Disease",disease
+                toWrite.write('\t'.join(map(str,newLine))+'\n')
+
 
             docu_length = docu_length + this_length     #update docu_length
             count +=1
@@ -86,6 +96,7 @@ for line in orig_file:
             fileName = "file"+str(file_number)
             toWrite = open(fileName,'w')
             toWrite.write(firstLine)
+
             result = getPosition(sentence,mir)
             for key in result:
                 array_position = result[key]
@@ -104,7 +115,13 @@ for line in orig_file:
                     newLine = row,start,end,"Trigger Word",trig_key
                     toWrite.write('\t'.join(map(str,newLine))+'\n')
 
-
+            dis_result = getDisease(sentence,disease)
+            for y in dis_result:
+                print y
+                start = docu_length + y[0]
+                end = docu_length + y[1]
+                newLine = row,start,end,"Disease",disease
+                toWrite.write('\t'.join(map(str,newLine))+'\n')
 
             docu_length = docu_length + this_length
             count +=1
