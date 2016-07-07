@@ -34,12 +34,12 @@ def getDisease(x,y):
 #Open original file for reading
 #If file is .XLSX, convert it to .txt (tab-separated file)
 #Vim into tab delimited file and type :%s/\r/\r/g in order to check that set list has correct new line characters in original file
-orig_file = open("practice.txt","r")
+orig_file = open("miR2_disease_data.txt","r")
 
 count = 1 #initialize count of every 200 line document
 docu_length = 0 #initialize length of 200 line document
 file_number = 1   #initialize first file number
-fileName = "file"+str(file_number)
+fileName = "file"+str(file_number)+".ann"
 toWrite = open(fileName,'w')
 firstLine = "Row#\tStart\tEnd\tType\tName\n"
 toWrite.write(firstLine)
@@ -55,7 +55,7 @@ for line in orig_file:
         trigger=trig.split("|")
         disease = data[4]
         disease = disease.rstrip('\n')
-        if(count < 5):      #loop through every 200 lines at a time
+        if(count < 201):      #loop through every 200 lines at a time
             this_length = len(sentence)
 
             result = getPosition(sentence,mir)  #Call function on miRNA and write to file
@@ -78,14 +78,13 @@ for line in orig_file:
 
             dis_result = getDisease(sentence,disease)   #Call function on disease and write to file
             for y in dis_result:
-                print y
                 start = docu_length + y[0]
                 end = docu_length + y[1]
                 newLine = row,start,end,"Disease",disease
                 toWrite.write('\t'.join(map(str,newLine))+'\n')
 
 
-            docu_length = docu_length + this_length     #update docu_length
+            docu_length = docu_length + this_length + 1    #update docu_length with sentence length plus two for every newline
             count +=1
         else:
             toWrite.close()
@@ -93,7 +92,7 @@ for line in orig_file:
             this_length = len(sentence)
             count =1
             file_number += 1
-            fileName = "file"+str(file_number)
+            fileName = "file"+str(file_number)+".ann"
             toWrite = open(fileName,'w')
             toWrite.write(firstLine)
 
@@ -117,11 +116,13 @@ for line in orig_file:
 
             dis_result = getDisease(sentence,disease)
             for y in dis_result:
-                print y
                 start = docu_length + y[0]
                 end = docu_length + y[1]
                 newLine = row,start,end,"Disease",disease
                 toWrite.write('\t'.join(map(str,newLine))+'\n')
 
-            docu_length = docu_length + this_length
+            docu_length = docu_length + this_length + 1
             count +=1
+
+
+orig_file.close()
