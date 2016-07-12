@@ -14,16 +14,22 @@ def extractPOS(x):
     sampleCapture = ','.join(sampleSearch)
     return sampleCapture
 
-
+#extract word from POS+word pair
 def extractWord(x):
     getWord = re.search("[A-Z]+ ([A-Za-z]+)",x)
     word = getWord.group(1)
     return word
 
+#extract POS from POS+word pair
+def getPOSback(x):
+    searchPOS = re.search("([A-Z]+) [A-Za-z]+",x)
+    capturePOS = searchPOS.group(1)
+    return capturePOS
+
 #given a word it searches the original abstract sentence for it to find the biological match
 #x = word y = abstract sentence
 def searchSentence(x,y):
-    findMatch = re.search((re.escape(x)+ r"-[0-9]+"),y)
+    findMatch = re.search((r"\b"+re.escape(x)+ r"-[0-9]+"),y)
     if findMatch:
         capture = findMatch.group(0)
         return capture
@@ -37,10 +43,12 @@ def bioName(orig_POS,abs_sentence):
     split_POS = orig_POS.split(',')
     for i in split_POS:
         y = extractWord(i)
+        z = getPOSback(i)
         trueWord = searchSentence(y,abs_sentence)
-        newPOS.append(trueWord)
+        newPOSpair = z + " " + trueWord
+        newPOS.append(newPOSpair)
     newString = ','.join(newPOS)
-    return newString 
+    return newString
 
 
 
@@ -59,11 +67,9 @@ if __name__ == '__main__':
             'outputFormat' : 'json'})
             result = (output['sentences'][0]['parse'])
             getPOS = extractPOS(result)
-            print getPOS
-            testing_POS = bioName(getPOS,sentence)
-            print testing_POS
-            #newLine = pmid+'\t'+ta+'\t'+sentence+'\t'+testing_POS+'\n'
-            #newFile.write(newLine)
+            fixBioName_POS = bioName(getPOS,sentence)
+            newLine = pmid+'\t'+ta+'\t'+sentence+'\t'+fixBioName_POS+'\n'
+            newFile.write(newLine)
 
 
 
