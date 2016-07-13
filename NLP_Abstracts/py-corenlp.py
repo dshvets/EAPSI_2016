@@ -3,8 +3,8 @@ from pycorenlp import StanfordCoreNLP
 
 #use python wrapper to call StanfordCoreNLP in order to perform POS tagging on miRNA-disease related abstracts
 
-orig_file = open("example.txt",'r')
-newFile = open("POS_tags.txt",'w')
+orig_file = open("gzero.txt",'r')
+newFile = open("example_result.txt",'w')
 firstLine = "PMID\tType\tSentence\tPOStags\n"
 newFile.write(firstLine)
 
@@ -50,6 +50,16 @@ def bioName(orig_POS,abs_sentence):
     newString = ','.join(newPOS)
     return newString
 
+#Change brackets [] in sentence to () so that POS tagger doesn't crash
+def removeBracket(x):
+    findBracket = re.search('\[|\]',x)
+    if findBracket:
+        x = re.sub('\[','(',x)
+        x = re.sub('\]',')',x)
+        return x
+    else:
+        return x
+
 
 
 if __name__ == '__main__':
@@ -62,7 +72,8 @@ if __name__ == '__main__':
             ta = info[1]
             sentence = info[2]
             sentence = sentence.rstrip('\n')
-            output =  nlp.annotate(sentence,properties={
+            cleanSentence = removeBracket(sentence)
+            output =  nlp.annotate(cleanSentence,properties={
             'annotators':'tokenize,ssplit,pos,depparse,parse',
             'outputFormat' : 'json'})
             result = (output['sentences'][0]['parse'])
