@@ -3,8 +3,8 @@ from pycorenlp import StanfordCoreNLP
 
 #use python wrapper to call StanfordCoreNLP in order to perform POS tagging on miRNA-disease related abstracts
 
-orig_file = open("gzero.txt",'r')
-newFile = open("example_result.txt",'w')
+orig_file = open("split_file.txt",'r')
+newFile = open("result_POS.txt",'w')
 firstLine = "PMID\tType\tSentence\tPOStags\n"
 newFile.write(firstLine)
 
@@ -60,6 +60,15 @@ def removeBracket(x):
     else:
         return x
 
+#tagger keeps freaking out at numbers in parentheses. this function removes the parentheses
+def removeParenth(x):
+    findParenth = re.search('\([0-9]+\)',x)
+    if findParenth:
+        x = re.sub('\(','',x)
+        x = re.sub('\)','',x)
+        return x
+    else:
+        return x
 
 
 if __name__ == '__main__':
@@ -73,14 +82,18 @@ if __name__ == '__main__':
             sentence = info[2]
             sentence = sentence.rstrip('\n')
             cleanSentence = removeBracket(sentence)
-            output =  nlp.annotate(cleanSentence,properties={
+            extraClean = removeParenth(cleanSentence)
+            output =  nlp.annotate(extraClean,properties={
             'annotators':'tokenize,ssplit,pos,depparse,parse',
             'outputFormat' : 'json'})
-            result = (output['sentences'][0]['parse'])
-            getPOS = extractPOS(result)
-            fixBioName_POS = bioName(getPOS,sentence)
-            newLine = pmid+'\t'+ta+'\t'+sentence+'\t'+fixBioName_POS+'\n'
-            newFile.write(newLine)
+            try:
+                result = output['sentences'][0]['parse']
+                getPOS = extractPOS(result)
+                fixBioName_POS = bioName(getPOS,sentence)
+                newLine = pmid+'\t'+ta+'\t'+sentence+'\t'+fixBioName_POS+'\n'
+                newFile.write(newLine)
+            except:
+                pass
 
 
 
