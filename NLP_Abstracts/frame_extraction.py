@@ -12,26 +12,23 @@ match_array = ["VBD,VBN,IN","VBZ,VBN,IN","NNS,IN","VBZ,IN","VBZ,TO","VBZ,JJ,IN",
 #take as input array of POS tag-word pairs
 #returns an array of arrys which contains results
 def matchFrame(x):
+    final_array =[]
     pos_index = ""
     cut_off = len(x) - 5
     for i in range(0,cut_off,2):
         next_i = i + 2
         final_i = i + 4
-        pos_index = pos_index + str(i) + ','
         sample_triplet = x[i] + ',' + x[next_i] + ',' + x[final_i]    #sample frame to be compared to array containing POS tags of interest
         sample_double = x[i] + ',' + x[next_i]
         if sample_double in match_array:
-            print("double")
-            print(sample_double)
+            word_double = x[i+1]+','+x[next_i+1]
+            double_add = [sample_double, word_double]
+            final_array.append(double_add)
         if sample_triplet in match_array:
-            print("triplet")
-            print(sample_triplet)
-    pos_index = pos_index[:-1]
-    #return pos_index
-
-
-
-
+            word_triplet = x[i+1]+','+x[next_i+1] +',' + x[final_i+1]
+            triplet_add = [sample_triplet,word_triplet]
+            final_array.append(triplet_add)
+    return final_array
 
 
 for line in orig_file:
@@ -42,10 +39,13 @@ for line in orig_file:
         pos_string = pos.replace(" ",",")
         pos_array = pos_string.split(',')
         result = matchFrame(pos_array)
-        print result
-
-
-
+        if not result:
+            pass
+        else:
+            for x in result:
+                x_string = '\t'.join(x)
+                x_string = x_string + '\n'
+                newFile.write(x_string)
 
 orig_file.close()
 newFile.close()
