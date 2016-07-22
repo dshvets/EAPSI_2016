@@ -46,8 +46,27 @@ for line in openFile:
         else:
             newFile.write(line)
 
-
-
-
 openFile.close()
 newFile.close()
+
+
+testingName = "testing_file.tsv"
+testFile = open(testingName,'w')
+
+for x in involve_sent:
+    line = x + '\tinvolve\n'
+    testFile.write(line)
+
+for x in assoc_sent:
+    line = x+'\tassoc\n'
+    testFile.write(line)
+
+for x in is_sent:
+    line = x + '\tis\n'
+    testFile.write(line)
+
+for x in found_sent:
+    line = x + '\tfound\n'
+    testFile.write(line)
+
+testFile.close()
