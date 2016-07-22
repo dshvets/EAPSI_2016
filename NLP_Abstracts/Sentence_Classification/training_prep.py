@@ -26,33 +26,28 @@ found_sent =[]
 
 #Provide the input file which should contain every single abstract sentence per line
 fileName = sys.argv[1]
+getRoot = captureName(fileName)
+newName = getRoot + '_for_testing.txt'
 openFile = open(fileName,'r')
-#newFile = open("for_testing")
+newFile = open(newName,'w')
 
 for line in openFile:
     if not line.startswith('PMID'):
         data = line.split('\t')
         sent = data[2].rstrip('\n')
-        if any(x in sent for x in involve):
-            if len(involve_sent) < 100:
+        if len(involve_sent) < 100 and any(x in sent for x in involve):
                 involve_sent.append(sent)
-        elif any(x in sent for x in association):
-            if len(assoc_sent) < 100:
+        elif len(assoc_sent) < 100 and any(x in sent for x in association):
                 assoc_sent.append(sent)
-        elif any(x in sent for x in is_a):
-            if len(is_sent) < 100:
+        elif len(is_sent) < 100 and any(x in sent for x in is_a):
                 is_sent.append(sent)
-        elif any(x in sent for x in found):
-            if len(found_sent) < 100:
+        elif len(found_sent) < 100 and any(x in sent for x in found):
                 found_sent.append(sent)
-
-
+        else:
+            newFile.write(line)
 
 
 
 
 openFile.close()
-
-
-
-print captureName(fileName)
+newFile.close()
